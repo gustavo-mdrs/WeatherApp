@@ -34,14 +34,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.weatherapp.ui.theme.WeatherAppTheme
 
-class LoginActivity : ComponentActivity() {
+class RegisterActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             WeatherAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    LoginPage(modifier = Modifier.padding(innerPadding))
+                    RegisterPage(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -50,9 +50,11 @@ class LoginActivity : ComponentActivity() {
 
 @Preview(showBackground = true)
 @Composable
-fun LoginPage(modifier: Modifier = Modifier) {
+fun RegisterPage(modifier: Modifier = Modifier) {
+    var usuario by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+    var passwordConfirm by rememberSaveable { mutableStateOf("") }
     val activity = LocalActivity.current as Activity
     Column(
         modifier = modifier.padding(16.dp).fillMaxSize(),
@@ -64,7 +66,14 @@ fun LoginPage(modifier: Modifier = Modifier) {
             fontSize = 24.sp
         )
 
-        Spacer(modifier = modifier.size(24.dp))
+        OutlinedTextField(
+            value = usuario,
+            label = { Text(text = "Digite seu nome de usuário") },
+            modifier = modifier.fillMaxWidth(fraction = 0.9f),
+            onValueChange = { usuario = it }
+        )
+
+        Spacer(modifier = modifier.size(10.dp))
 
         OutlinedTextField(
             value = email,
@@ -73,7 +82,7 @@ fun LoginPage(modifier: Modifier = Modifier) {
             onValueChange = { email = it }
         )
 
-        Spacer(modifier = modifier.size(24.dp))
+        Spacer(modifier = modifier.size(10.dp))
 
         OutlinedTextField(
             value = password,
@@ -82,30 +91,27 @@ fun LoginPage(modifier: Modifier = Modifier) {
             onValueChange = { password = it },
             visualTransformation = PasswordVisualTransformation()
         )
+
+        Spacer(modifier = modifier.size(10.dp))
+
+        OutlinedTextField(
+            value = passwordConfirm,
+            label = { Text(text = "Digite sua senha novamente") },
+            modifier = modifier.fillMaxWidth(fraction = 0.9f),
+            onValueChange = { passwordConfirm = it },
+            visualTransformation = PasswordVisualTransformation()
+        )
         Row(modifier = modifier) {
             Button(onClick = {
-                Toast.makeText(activity, "Login OK!", Toast.LENGTH_LONG).show()
-                activity.startActivity(
-                    Intent(activity, MainActivity::class.java).setFlags(
-                        FLAG_ACTIVITY_SINGLE_TOP
-                    )
-                )
-            }, enabled = email.isNotEmpty() && password.isNotEmpty()) {
-                Text("Login")
+                Toast.makeText(activity, "Registrado com sucesso!", Toast.LENGTH_LONG).show()
+                activity.finish()
+            },enabled = email.isNotEmpty()&& usuario.isNotEmpty() && passwordConfirm.isNotEmpty() && password.isNotEmpty() && password == passwordConfirm) {
+                Text("Registrar")
             }
             Button(
-                onClick = { email = ""; password = "" }
+                onClick = { email = ""; password = ""; usuario = ""; passwordConfirm = "" }
             ) {
                 Text("Limpar")
-            }
-            Button(onClick = {
-                activity.startActivity(
-                    Intent(activity, RegisterActivity::class.java).setFlags(
-                        FLAG_ACTIVITY_SINGLE_TOP
-                    )
-                )
-            } ) {
-                Text("Registrar-se")
             }
         }
     }

@@ -54,7 +54,7 @@ fun HomePage(modifier: Modifier = Modifier) {
             fontSize = 24.sp
         )
 
-        Spacer(modifier = modifier.size(24.dp))
+        Spacer(modifier = modifier.size(44.dp))
 
         Row(modifier = modifier) {
             Button( onClick = {
