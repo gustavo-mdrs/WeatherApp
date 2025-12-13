@@ -45,6 +45,7 @@ android {
 dependencies {
     implementation("androidx.navigation:navigation-compose:2.9.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
