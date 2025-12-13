@@ -13,23 +13,50 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import com.weatherapp.MainViewModel
 
-@Preview(showBackground = true)
 @Composable
 fun MapPage(modifier: Modifier = Modifier.Companion, viewModel: MainViewModel) {
-    Column(
-        modifier = modifier.fillMaxSize()
-            .background(Color.Companion.Gray)
-            .wrapContentSize(Alignment.Companion.Center)
-    ) {
-        Text(
-            text = "Mapa",
-            fontWeight = FontWeight.Companion.Bold,
-            color = Color.Companion.White,
-            modifier = modifier.align(Alignment.Companion.CenterHorizontally),
-            textAlign = TextAlign.Companion.Center,
-            fontSize = 20.sp
+    val recife = LatLng(-8.05, -34.9)
+    val caruaru = LatLng(-8.27, -35.98)
+    val joaopessoa = LatLng(-7.12, -34.84)
+    val camPosState = rememberCameraPositionState ()
+    GoogleMap (modifier = Modifier.fillMaxSize(),
+        onMapClick = { viewModel.add("Cidade@${it.latitude}:${it.longitude}", location = it) },
+        cameraPositionState = camPosState
+        ) {
+
+        viewModel.cities.forEach {
+            if (it.location != null) {
+                Marker( state = MarkerState(position = it.location),
+                    title = it.name, snippet = "${it.location}")
+            }
+        }
+
+        Marker(
+            state = MarkerState(position = recife),
+            title = "Recife",
+            snippet = "Marcador em Recife",
+            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
+        )
+        Marker(
+            state = MarkerState(position = caruaru),
+            title = "Caruaru",
+            snippet = "Marcador em Caruaru",
+            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
+        )
+        Marker(
+            state = MarkerState(position = joaopessoa),
+            title = "Joao Pessoa",
+            snippet = "Marcador em Joao Pessoa",
+            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)
         )
     }
+
 }
