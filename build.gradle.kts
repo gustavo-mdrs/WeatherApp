@@ -14,4 +14,5 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose) apply false
     kotlin("plugin.serialization") version "2.2.20" apply false
+    alias(libs.plugins.google.gms.google.services) apply false
 }
