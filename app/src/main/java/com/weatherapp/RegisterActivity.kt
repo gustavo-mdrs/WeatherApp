@@ -106,16 +106,16 @@ fun RegisterPage(modifier: Modifier = Modifier) {
         Row(modifier = modifier) {
             Button(onClick = {
                 Firebase.auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(activity) { task ->
-                    if (task.isSuccessful) {
-                        Toast.makeText(activity,
-                            "Registro OK!", Toast.LENGTH_LONG).show()
-                        activity.finish()
-                    } else {
-                        Toast.makeText(activity,
-                            "Registro FALHOU!", Toast.LENGTH_LONG).show()
+                    .addOnCompleteListener(activity) { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(activity,
+                                "Registro OK!", Toast.LENGTH_LONG).show()
+                            activity.finish()
+                        } else {
+                            Toast.makeText(activity,
+                                "Registro FALHOU!", Toast.LENGTH_LONG).show()
+                        }
                     }
-                }
             },enabled = email.isNotEmpty()&& usuario.isNotEmpty() && passwordConfirm.isNotEmpty() && password.isNotEmpty() && password == passwordConfirm) {
                 Text("Registrar")
             }
