@@ -19,12 +19,19 @@ import com.weatherapp.model.Forecast
 import com.weatherapp.model.User
 import com.weatherapp.model.Weather
 import com.weatherapp.ui.theme.ListPage
+import com.weatherapp.ui.theme.nav.Route
 
 class MainViewModel (private val db: FBDatabase,
                      private val service : WeatherService): ViewModel(), FBDatabase.Listener{
 
     private val _forecast = mutableStateMapOf<String, List<Forecast>?>()
     private var _city = mutableStateOf<String?>(null)
+
+    private var _page = mutableStateOf<Route>(Route.Home)
+    var page: Route
+        get() = _page.value
+        set(tmp) { _page.value = tmp }
+
     var city: String?
         get() = _city.value
         set(tmp) { _city.value = tmp }
