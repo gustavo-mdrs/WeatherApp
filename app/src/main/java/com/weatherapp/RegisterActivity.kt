@@ -57,7 +57,7 @@ class RegisterActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun RegisterPage(modifier: Modifier = Modifier) {
-    var usuario by rememberSaveable { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var passwordConfirm by rememberSaveable { mutableStateOf("") }
@@ -73,10 +73,10 @@ fun RegisterPage(modifier: Modifier = Modifier) {
         )
 
         OutlinedTextField(
-            value = usuario,
+            value = name,
             label = { Text(text = "Digite seu nome de usuário") },
             modifier = modifier.fillMaxWidth(fraction = 0.9f),
-            onValueChange = { usuario = it }
+            onValueChange = { name = it }
         )
 
         Spacer(modifier = modifier.size(10.dp))
@@ -121,11 +121,11 @@ fun RegisterPage(modifier: Modifier = Modifier) {
                                 "Registro FALHOU!", Toast.LENGTH_LONG).show()
                         }
                     }
-            },enabled = email.isNotEmpty()&& usuario.isNotEmpty() && passwordConfirm.isNotEmpty() && password.isNotEmpty() && password == passwordConfirm) {
+            },enabled = email.isNotEmpty()&& name.isNotEmpty() && passwordConfirm.isNotEmpty() && password.isNotEmpty() && password == passwordConfirm) {
                 Text("Registrar")
             }
             Button(
-                onClick = { email = ""; password = ""; usuario = ""; passwordConfirm = "" }
+                onClick = { email = ""; password = ""; name = ""; passwordConfirm = "" }
             ) {
                 Text("Limpar")
             }
