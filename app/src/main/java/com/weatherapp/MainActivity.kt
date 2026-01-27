@@ -1,5 +1,6 @@
 package com.weatherapp
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -19,12 +20,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.core.util.Consumer
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -39,6 +42,8 @@ import com.weatherapp.ui.theme.nav.BottomNavBar
 import com.weatherapp.ui.theme.nav.BottomNavItem
 import com.weatherapp.ui.theme.nav.MainNavHost
 import com.weatherapp.ui.theme.nav.Route
+import com.weatherapp.monitor.ForecastMonitor
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 
@@ -49,9 +54,18 @@ class MainActivity : ComponentActivity() {
         setContent {
             val fbDB = remember { FBDatabase() }
             val weatherService = remember { WeatherService(this)}
+            val forecastMonitor = remember { ForecastMonitor(this) }
             val viewModel : MainViewModel = viewModel(
-                factory = MainViewModelFactory(fbDB, weatherService)
+                factory = MainViewModelFactory(fbDB, weatherService, forecastMonitor)
             )
+            DisposableEffect(Unit) {
+                val listener = Consumer<Intent> { intent ->
+                    viewModel.city = intent.getStringExtra("city")
+                    viewModel.page = Route.Home
+                }
+                addOnNewIntentListener(listener)
+                onDispose { removeOnNewIntentListener(listener) }
+            }
             val navController = rememberNavController()
             val currentRoute = navController.currentBackStackEntryAsState()
             val showButton = currentRoute.value?.destination?.hasRoute(Route.List::class) == true

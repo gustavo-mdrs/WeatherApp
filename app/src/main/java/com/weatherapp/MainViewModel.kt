@@ -1,9 +1,7 @@
 package com.weatherapp
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.model.LatLng
@@ -18,11 +16,12 @@ import com.weatherapp.model.City
 import com.weatherapp.model.Forecast
 import com.weatherapp.model.User
 import com.weatherapp.model.Weather
-import com.weatherapp.ui.theme.ListPage
+import com.weatherapp.monitor.ForecastMonitor
 import com.weatherapp.ui.theme.nav.Route
 
 class MainViewModel (private val db: FBDatabase,
-                     private val service : WeatherService): ViewModel(), FBDatabase.Listener{
+                     private val service: WeatherService,
+                     private val monitor: ForecastMonitor): ViewModel(), FBDatabase.Listener{
 
     private val _forecast = mutableStateMapOf<String, List<Forecast>?>()
 
@@ -43,6 +42,10 @@ class MainViewModel (private val db: FBDatabase,
     private val _cities = mutableStateMapOf<String, City>()
     val cities : List<City>
         get() = _cities.values.toList().sortedBy { it.name }
+
+    val monitoredCities: List<City>
+        get() = _cities.values.filter { it.isMonitored }
+
     private val _weather = mutableStateMapOf<String, Weather>()
     private val _user = mutableStateOf<User?> (null)
     val user : User?
@@ -92,10 +95,12 @@ class MainViewModel (private val db: FBDatabase,
         _user.value = user.toUser()
     }
     override fun onUserSignOut() {
-//TODO("Not yet implemented")
+        monitor.cancelAll()
     }
     override fun onCityAdded(city: FBCity) {
+        val newCity = city.toCity()
         _cities[city.name!!] = city.toCity()
+        monitor.updateCity(newCity)
     }
     override fun onCityUpdated(city: FBCity) {
         _cities.remove(city.name)
@@ -103,6 +108,7 @@ class MainViewModel (private val db: FBDatabase,
     }
     override fun onCityRemoved(city: FBCity) {
         _cities.remove(city.name)
+        monitor.cancelCity(city.toCity())
     }
 
     private fun loadWeather(name: String) {
@@ -127,11 +133,11 @@ class MainViewModel (private val db: FBDatabase,
 
 }
 
-class MainViewModelFactory(private val db : FBDatabase, private val service : WeatherService) :
+class MainViewModelFactory(private val db : FBDatabase, private val service: WeatherService, private val monitor: ForecastMonitor ) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(db, service) as T
+            return MainViewModel(db, service, monitor) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
