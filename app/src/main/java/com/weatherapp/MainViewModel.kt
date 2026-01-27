@@ -25,9 +25,14 @@ class MainViewModel (private val db: FBDatabase,
                      private val service : WeatherService): ViewModel(), FBDatabase.Listener{
 
     private val _forecast = mutableStateMapOf<String, List<Forecast>?>()
+
     private var _city = mutableStateOf<String?>(null)
 
     private var _page = mutableStateOf<Route>(Route.Home)
+
+    val cityMap : Map<String, City>
+        get() = _cities.toMap()
+
     var page: Route
         get() = _page.value
         set(tmp) { _page.value = tmp }
@@ -115,6 +120,11 @@ class MainViewModel (private val db: FBDatabase,
             }
         }
     }
+
+    fun update(city: City) {
+        db.update(city.toFBCity())
+    }
+
 }
 
 class MainViewModelFactory(private val db : FBDatabase, private val service : WeatherService) :
