@@ -36,6 +36,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.weatherapp.api.WeatherService
 import com.weatherapp.db.fb.FBDatabase
+import com.weatherapp.db.local.LocalDatabase
 import com.weatherapp.ui.theme.CityDialog
 import com.weatherapp.ui.theme.WeatherAppTheme
 import com.weatherapp.ui.theme.nav.BottomNavBar
@@ -43,6 +44,7 @@ import com.weatherapp.ui.theme.nav.BottomNavItem
 import com.weatherapp.ui.theme.nav.MainNavHost
 import com.weatherapp.ui.theme.nav.Route
 import com.weatherapp.monitor.ForecastMonitor
+import com.weatherapp.repo.Repository
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,10 +55,16 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val fbDB = remember { FBDatabase() }
+            val localDB = remember {
+                // Use o UID do usuário logado para nome único do banco
+                val uid = Firebase.auth.currentUser?.uid ?: "default_user"
+                LocalDatabase(this, "weather_db_$uid")
+            }
+            val repository = remember { Repository(fbDB, localDB) }
             val weatherService = remember { WeatherService(this)}
             val forecastMonitor = remember { ForecastMonitor(this) }
             val viewModel : MainViewModel = viewModel(
-                factory = MainViewModelFactory(fbDB, weatherService, forecastMonitor)
+                factory = MainViewModelFactory(repository, weatherService, forecastMonitor)
             )
             DisposableEffect(Unit) {
                 val listener = Consumer<Intent> { intent ->
