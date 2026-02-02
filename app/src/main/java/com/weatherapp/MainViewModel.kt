@@ -105,6 +105,7 @@ class MainViewModel (private val db: FBDatabase,
     override fun onCityUpdated(city: FBCity) {
         _cities.remove(city.name)
         _cities[city.name!!] = city.toCity()
+        monitor.updateCity(city.toCity())
     }
     override fun onCityRemoved(city: FBCity) {
         _cities.remove(city.name)
